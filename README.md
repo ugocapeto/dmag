@@ -10,7 +10,7 @@ This repo is an implementation of
 
 and
 
-[Robust Optical Flow Estimation by Javier Sánchez Pérez, Nelson Monzón López, Agustín Salgado de la Nuez](https://www.ipol.im/pub/art/2013/21/)
+[Robust Optical Flow Estimation by Javier Sánchez Pérez, Nelson Monzón López, Agustín Salgado de la Nuez](https://www.ipol.im/pub/art/2013/21/).
 
 To create the executable, compile the code in directory "dmag" using "make -f Makefile_g/Makefile_O" and then go into the "main" directory and create the exec using "make".
 
