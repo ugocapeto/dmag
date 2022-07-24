@@ -126,14 +126,6 @@ i must be swapped with j and j must be swapped with i
         sor_w*(Av[ind]-D[ind]*du[ind]+alpha*div_dv)/Dv[ind];
 
        /*
-       Force dv to be zero (no displacement in the y direction)
-       */
-
-       /*
-       dv[ind]= 0.0;
-       */
-
-       /*
        Keep track of how much the increments change
        */
 

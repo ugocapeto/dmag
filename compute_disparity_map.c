@@ -16,9 +16,12 @@ void compute_disparity_map(
  double sor_w,
  int max_sor_iter,
  double max_sor_error,
- int **pdisp_arr,
- int *pmin_d,
- int *pmax_d
+ int **pdisp_u_arr,
+ int *pmin_d_u,
+ int *pmax_d_u,
+ int **pdisp_v_arr,
+ int *pmin_d_v,
+ int *pmax_d_v
 )
 
 {
@@ -40,10 +43,13 @@ void compute_disparity_map(
  double max_disp_u;
  double min_disp_v;
  double max_disp_v;
- int *disp_arr;
+ int *disp_u_arr;
+ int *disp_v_arr;
  int val_int;
- int min_d;
- int max_d;
+ int min_d_u;
+ int max_d_u;
+ int min_d_v;
+ int max_d_v;
 
  xdim= w;
  ydim= h;
@@ -154,7 +160,7 @@ void compute_disparity_map(
  Convert u displacement to disparity
  */
 
- disp_arr= (int *)calloc(xdim*ydim,sizeof(int));
+ disp_u_arr= (int *)calloc(xdim*ydim,sizeof(int));
 
  for ( i= 0 ; i< ydim ; i++ ) {
     for ( j= 0 ; j< xdim ; j++ ) {
@@ -164,7 +170,7 @@ void compute_disparity_map(
         val_int= (int)(val+0.5);
        else
         val_int= (int)(val-0.5);
-       disp_arr[pixel]= -val_int;
+       disp_u_arr[pixel]= -val_int;
     }
  }
 
@@ -175,21 +181,62 @@ void compute_disparity_map(
  for ( i= 0 ; i< ydim ; i++ ) {
     for ( j= 0 ; j< xdim ; j++ ) {
        pixel= i*xdim+j;
-       val_int= disp_arr[pixel];
+       val_int= disp_u_arr[pixel];
        if ( pixel == 0 ) {
-          min_d= val_int;
-          max_d= val_int;
+          min_d_u= val_int;
+          max_d_u= val_int;
        }
        else {
-          if ( val_int < min_d )
-           min_d= val_int;
-          if ( val_int > max_d )
-           max_d= val_int;
+          if ( val_int < min_d_u )
+           min_d_u= val_int;
+          if ( val_int > max_d_u )
+           max_d_u= val_int;
        }
     }
  }
 
- fprintf(stdout,"min_d = %d max_d = %d\n",min_d,max_d);
+ fprintf(stdout,"min_d_u = %d max_d_u = %d\n",min_d_u,max_d_u);
+
+ /*
+ Convert v displacement to disparity
+ */
+
+ disp_v_arr= (int *)calloc(xdim*ydim,sizeof(int));
+
+ for ( i= 0 ; i< ydim ; i++ ) {
+    for ( j= 0 ; j< xdim ; j++ ) {
+       pixel= i*xdim+j;
+       val= disp_v[pixel];
+       if ( val >= 0. )
+        val_int= (int)(val+0.5);
+       else
+        val_int= (int)(val-0.5);
+       disp_v_arr[pixel]= -val_int;
+    }
+ }
+
+ /*
+ Get the min and max disparities
+ */
+
+ for ( i= 0 ; i< ydim ; i++ ) {
+    for ( j= 0 ; j< xdim ; j++ ) {
+       pixel= i*xdim+j;
+       val_int= disp_v_arr[pixel];
+       if ( pixel == 0 ) {
+          min_d_v= val_int;
+          max_d_v= val_int;
+       }
+       else {
+          if ( val_int < min_d_v )
+           min_d_v= val_int;
+          if ( val_int > max_d_v )
+           max_d_v= val_int;
+       }
+    }
+ }
+
+ fprintf(stdout,"min_d_v = %d max_d_v = %d\n",min_d_v,max_d_v);
 
  /*
  Free memory
@@ -200,8 +247,11 @@ void compute_disparity_map(
  free(disp_u);
  free(disp_v);
 
- (*pdisp_arr)= disp_arr;
- (*pmin_d)= min_d;
- (*pmax_d)= max_d;
+ (*pdisp_u_arr)= disp_u_arr;
+ (*pdisp_v_arr)= disp_v_arr;
+ (*pmin_d_u)= min_d_u;
+ (*pmax_d_u)= max_d_u;
+ (*pmin_d_v)= min_d_v;
+ (*pmax_d_v)= max_d_v;
 
 }

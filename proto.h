@@ -296,7 +296,10 @@ void compute_disparity_map(
  double sor_w,
  int max_sor_iter,
  double max_sor_error,
- int **pdisp_arr,
- int *pmin_d,
- int *pmax_d
+ int **pdisp_u_arr,
+ int *pmin_d_u,
+ int *pmax_d_u,
+ int **pdisp_v_arr,
+ int *pmin_d_v,
+ int *pmax_d_v
 );

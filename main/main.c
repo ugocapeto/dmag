@@ -12,7 +12,8 @@ int main(
  char filename[80];
  char filename1[80];
  char filename2[80];
- char filename_disp[80];
+ char filename_disp_u[80];
+ char filename_disp_v[80];
  int *I1_int;
  int *I2_int;
  int width;
@@ -28,10 +29,16 @@ int main(
  double max_sor_error;
  double gamma;
  int err_flag;
- int *disp_arr;
+ int *disp_u_arr;
+ int min_d_u;
+ int max_d_u;
+ int *disp_v_arr;
+ int min_d_v;
+ int max_d_v;
+ int *disp_u_normalized_arr;
+ int *disp_v_normalized_arr;
  int min_d;
  int max_d;
- int *disp_normalized_arr;
 
  /*
  Let's read in the input file
@@ -144,12 +151,20 @@ int main(
  fprintf(stdout,"max sor error = %g\n",max_sor_error);
 
  /*
- Get filename for disparity map
+ Get filename for disparity map in the u direction
  */
 
- fscanf(fp,"%s",filename_disp);
+ fscanf(fp,"%s",filename_disp_u);
 
- fprintf(stdout,"disparity map = %s\n",filename_disp);
+ fprintf(stdout,"disparity map u = %s\n",filename_disp_u);
+
+ /*
+ Get filename for disparity map in the v direction
+ */
+
+ fscanf(fp,"%s",filename_disp_v);
+
+ fprintf(stdout,"disparity map v = %s\n",filename_disp_v);
 
  /*
  We are done reading the input file and
@@ -222,28 +237,36 @@ int main(
   sor_w,
   max_sor_iter,
   max_sor_error,
-  &disp_arr,
-  &min_d,
-  &max_d
+  &disp_u_arr,
+  &min_d_u,
+  &max_d_u,
+  &disp_v_arr,
+  &min_d_v,
+  &max_d_v
  );
 
  /*
- Let's dump the disparity map
+ Let's dump the disparity map in the u direction
  */
 
- disp_normalized_arr= (int *)calloc(width*height,sizeof(int));
+ disp_u_normalized_arr= (int *)calloc(width*height,sizeof(int));
+
+ min_d= min_d_u;
+ max_d= max_d_u;
+ if ( max_d == min_d )
+  max_d= min_d+1;
 
  normalize_image(
-  disp_arr,
-  disp_normalized_arr,
+  disp_u_arr,
+  disp_u_normalized_arr,
   width*height,
   min_d,
   max_d
  );
 
  err_flag= write_image(
-  filename_disp,
-  disp_normalized_arr,
+  filename_disp_u,
+  disp_u_normalized_arr,
   width,
   height
  );
@@ -252,7 +275,39 @@ int main(
     return 1;
  }
 
- free(disp_normalized_arr);
+ free(disp_u_normalized_arr);
+
+/*
+ Let's dump the disparity map in the v direction
+ */
+
+ disp_v_normalized_arr= (int *)calloc(width*height,sizeof(int));
+
+ min_d= min_d_v;
+ max_d= max_d_v;
+ if ( max_d == min_d )
+  max_d= min_d+1;
+
+ normalize_image(
+  disp_v_arr,
+  disp_v_normalized_arr,
+  width*height,
+  min_d,
+  max_d
+ );
+
+ err_flag= write_image(
+  filename_disp_v,
+  disp_v_normalized_arr,
+  width,
+  height
+ );
+
+ if ( err_flag == 1 ) {
+    return 1;
+ }
+
+ free(disp_v_normalized_arr);
 
  /*
  Free memory
@@ -260,7 +315,8 @@ int main(
 
  free(I1_int);
  free(I2_int);
- free(disp_arr);
+ free(disp_u_arr);
+ free(disp_v_arr);
 
  return(0);
 
